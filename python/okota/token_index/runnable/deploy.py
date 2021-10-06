@@ -16,9 +16,10 @@ import logging
 import chainlib.eth.cli
 from chainlib.chain import ChainSpec
 from chainlib.eth.tx import receipt
+from chainlib.eth.address import is_checksum_address
 
 # local imports
-from eth_address_declarator.token_index.index import TokenUniqueSymbolIndexAddressDeclarator
+from okota.token_index.index import TokenUniqueSymbolIndexAddressDeclarator
 
 logging.basicConfig(level=logging.WARNING)
 logg = logging.getLogger()

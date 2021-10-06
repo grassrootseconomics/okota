@@ -1,4 +1,4 @@
-"""Deploys accounts index, registering arbitrary number of writers
+"""Deploys contract registry
 
 .. moduleauthor:: Louis Holbrook <dev@holbrook.no>
 .. pgp:: 0826EDA1702D1E87C6E2875121D2E7BB88C2A746 
@@ -17,9 +17,10 @@ import chainlib.eth.cli
 from chainlib.chain import ChainSpec
 from chainlib.eth.connection import EthHTTPConnection
 from chainlib.eth.tx import receipt
+from chainlib.eth.address import is_checksum_address
 
 # local imports
-from okota.accounts_index import AccountsIndexAddressDeclarator
+from okota.contract_registry.registry import ContractRegistryAddressDeclarator as ContractRegistry
 
 logging.basicConfig(level=logging.WARNING)
 logg = logging.getLogger()
@@ -27,14 +28,14 @@ logg = logging.getLogger()
 arg_flags = chainlib.eth.cli.argflag_std_write
 argparser = chainlib.eth.cli.ArgumentParser(arg_flags)
 argparser.add_argument('--address-declarator', type=str, required=True, dest='address_declarator', help='address declarator backend address')
-argparser.add_argument('--token-address', type=str, required=True, dest='token_address', help='token address context for accounts registry')
+argparser.add_argument('--identifier', type=str, action='append', default=[], help='Add contract identifier')
 args = argparser.parse_args()
 
 extra_args = {
     'address_declarator': None,
-    'token_address': None,
-    }
-config = chainlib.eth.cli.Config.from_args(args, arg_flags, extra_args=extra_args, default_fee_limit=AccountsIndexAddressDeclarator.gas())
+    'identifier': None,
+        }
+config = chainlib.eth.cli.Config.from_args(args, arg_flags, extra_args=extra_args, default_fee_limit=ContractRegistry.gas())
 
 wallet = chainlib.eth.cli.Wallet()
 wallet.from_config(config)
@@ -56,13 +57,8 @@ def main():
     if not config.true('_UNSAFE') and not is_checksum_address(address_declarator):
         raise ValueError('address declarator {} is not a valid checksum address'.format(address_declarator))
 
-    token_address = config.get('_TOKEN_ADDRESS')
-    if not config.true('_UNSAFE') and not is_checksum_address(token_address):
-        raise ValueError('token {} is not a valid checksum address'.format(token_address))
-
-    c = AccountsIndexAddressDeclarator(chain_spec, signer=signer, gas_oracle=gas_oracle, nonce_oracle=nonce_oracle)
-
-    (tx_hash_hex, o) = c.constructor(signer_address, token_address, address_declarator)
+    c = ContractRegistry(chain_spec, signer=signer, gas_oracle=gas_oracle, nonce_oracle=nonce_oracle)
+    (tx_hash_hex, o) = c.constructor(signer_address, config.get('_ADDRESS_DECLARATOR'), config.get('_IDENTIFIER'))
 
     if config.get('_RPC_SEND'):
         conn.do(o)
