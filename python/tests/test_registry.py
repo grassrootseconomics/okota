@@ -2,6 +2,7 @@
 import os
 import unittest
 import logging
+import hashlib
 
 # external imports
 from chainlib.eth.unittest.ethtester import EthTesterCase
@@ -45,13 +46,47 @@ class TestContractRegistry(TestAddressDeclaratorBase):
         nonce_oracle = RPCNonceOracle(self.accounts[0], self.rpc)
         c = ContractRegistry(self.chain_spec, signer=self.signer, nonce_oracle=nonce_oracle)
 
-        bogus_hash_one = add_0x(os.urandom(32).hex())
-        bogus_hash_two = add_0x(os.urandom(32).hex())
-        (tx_hash_hex, o) = c.set(self.registry_address, self.accounts[0], 'FOO', self.registry_address, bogus_hash_one, bogus_hash_two)
+        bogus_hash_two = bytearray(32)
+        bogus_hash_two[0] = 0x01
+        bogus_hash_two_hex = add_0x(bogus_hash_two.hex())
+        (tx_hash_hex, o) = c.set(self.registry_address, self.accounts[0], 'FOO', self.registry_address, str(self.chain_spec), bogus_hash_two_hex)
         r = self.rpc.do(o)
         o = receipt(r)
         rcpt = self.rpc.do(o)
-        assert rcpt['status'] == 1
+        self.assertEqual(rcpt['status'], 1)
+
+        o = c.address_of(self.registry_address, 'FOO', sender_address=self.accounts[0])
+        r = self.rpc.do(o)
+        r = c.parse_address_of(r)
+        self.assertEqual(r, strip_0x(self.registry_address))
+
+        c = Declarator(self.chain_spec, signer=self.signer, nonce_oracle=nonce_oracle)
+        o = c.declaration(self.address, self.accounts[0], self.registry_address, sender_address=self.accounts[0])
+        r = self.rpc.do(o)
+        proofs = c.parse_declaration(r)
+
+        logg.debug('proofs {}'.format(proofs))
+        s = to_identifier('FOO')
+        h = hashlib.sha256()
+        h.update(bytes.fromhex(strip_0x(s)))
+        z = h.digest() 
+        self.assertEqual(z.hex(), proofs[0])
+
+        h = hashlib.sha256()
+        h.update(str(self.chain_spec).encode('utf-8'))
+        chain_description_hash = h.digest()
+
+        h = hashlib.sha256()
+        h.update(z)
+        h.update(chain_description_hash)
+        z = h.digest() 
+        self.assertEqual(z.hex(), proofs[1])
+
+        h = hashlib.sha256()
+        h.update(z)
+        h.update(bogus_hash_two)
+        z = h.digest() 
+        self.assertEqual(z.hex(), proofs[2])
 
 
 if __name__ == '__main__':
