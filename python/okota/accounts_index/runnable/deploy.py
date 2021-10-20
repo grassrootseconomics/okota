@@ -17,6 +17,10 @@ import chainlib.eth.cli
 from chainlib.chain import ChainSpec
 from chainlib.eth.connection import EthHTTPConnection
 from chainlib.eth.tx import receipt
+from chainlib.eth.address import (
+        is_checksum_address,
+        is_address,
+        )
 
 # local imports
 from okota.accounts_index import AccountsIndexAddressDeclarator
