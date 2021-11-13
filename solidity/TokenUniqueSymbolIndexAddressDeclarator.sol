@@ -8,12 +8,13 @@ contract TokenUniqueSymbolIndexAddressDeclarator {
 	address public owner;
 	address newOwner;
 	address public addressDeclaratorAddress;
+	mapping(address => bool) writers;
 
 	mapping ( bytes32 => uint256 ) public registry;
 	address[] tokens;
 
 	event OwnershipTransferred(address indexed previousOwner, address indexed newOwner); // EIP173
-	event AddressAdded(address indexed addedAccount, uint256 indexed accountIndex); // AccountsIndex
+	event AddressAdded(address indexed addedAccount, uint256 indexed accountIndex); // AddressIndex
 
 	constructor(address _addressDeclaratorAddress) public {
 		owner = msg.sender;
@@ -35,7 +36,7 @@ contract TokenUniqueSymbolIndexAddressDeclarator {
 	}
 
 	function register(address _token) public returns (bool) {
-		require(msg.sender == owner);
+		require(writers[msg.sender]);
 		
 		bool ok;
 		bytes memory r;
@@ -64,13 +65,13 @@ contract TokenUniqueSymbolIndexAddressDeclarator {
 		return true;
 	}
 
-	// Implements AccountsIndex
+	// Implements AddressIndex
 	function add(address _token) public returns (bool) {
 		return register(_token);
 	}
 
 
-	// Implements AccountsIndex
+	// Implements AddressIndex
 	function entryCount() public view returns ( uint256 ) {
 		return tokens.length - 1;
 	}
@@ -92,10 +93,23 @@ contract TokenUniqueSymbolIndexAddressDeclarator {
 		emit OwnershipTransferred(oldOwner, owner);
 	}
 
+	// Implements Writer
+	function addWriter(address _writer) public returns (bool) {
+		require(owner == msg.sender);
+		writers[_writer] = true;
+		return true;
+	}
+
+	// Implements Writer
+	function deleteWriter(address _writer) public returns (bool) {
+		require(owner == msg.sender);
+		delete writers[_writer];
+		return true;
+	}
 
 	// Implements EIP165
 	function supportsInterface(bytes4 _sum) public pure returns (bool) {
-		if (_sum == 0xcbdb05c7) { // AccountsIndex
+		if (_sum == 0xcbdb05c7) { // AddressIndex
 			return true;
 		}
 		if (_sum == 0xbb34534c) { // Registry
@@ -108,6 +122,9 @@ contract TokenUniqueSymbolIndexAddressDeclarator {
 			return true;
 		}
 		if (_sum == 0x37a47be4) { // OwnedAccepter
+			return true;
+		}
+		if (_sum == 0x80c84bd6) { // Writer
 			return true;
 		}
 		return false;

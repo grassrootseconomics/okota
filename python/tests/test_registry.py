@@ -89,5 +89,6 @@ class TestContractRegistry(TestAddressDeclaratorBase):
         self.assertEqual(z.hex(), proofs[2])
 
 
+
 if __name__ == '__main__':
     unittest.main()

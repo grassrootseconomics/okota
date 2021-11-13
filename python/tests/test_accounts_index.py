@@ -14,6 +14,7 @@ from eth_address_declarator.unittest import TestAddressDeclaratorBase
 
 # local imports
 from okota.accounts_index import AccountsIndexAddressDeclarator
+from eth_accounts_index.registry import AccountRegistry
 
 # test imports
 
@@ -38,6 +39,14 @@ class TestAccountsIndex(TestAddressDeclaratorBase):
         self.accounts_index_address = r['contract_address']
         logg.debug('accounts index deployed with address {}'.format(self.accounts_index_address))
 
+        c = AccountRegistry(self.chain_spec, signer=self.signer, nonce_oracle=nonce_oracle)
+        (tx_hash_hex, o) = c.add_writer(self.accounts_index_address, self.accounts[0], self.accounts[0])
+        r = self.rpc.do(o)
+
+        o = receipt(tx_hash_hex)
+        r = self.rpc.do(o)
+        self.assertEqual(r['status'], 1)
+
 
     def test_accounts_index_address_declarator(self):
         nonce_oracle = RPCNonceOracle(self.accounts[0], self.rpc)
@@ -46,14 +55,18 @@ class TestAccountsIndex(TestAddressDeclaratorBase):
         r = self.rpc.do(o)
         self.assertEqual(tx_hash, r)
 
+        self.helper.mine_block()
+
         o = receipt(tx_hash)
         rcpt = self.rpc.do(o)
+        self.assertEqual(rcpt['status'], 1)
+        for k in rcpt.keys():
+            logg.debug('>>> RCPT {} {}'.format(k, rcpt[k]))
 
-        self.helper.mine_block()
         o = c.have(self.accounts_index_address, self.accounts[1], sender_address=self.accounts[0])
         r = self.rpc.do(o)
 
-        c = Declarator(self.chain_spec, signer=self.signer, nonce_oracle=nonce_oracle)
+        c = Declarator(self.chain_spec) #, signer=self.signer, nonce_oracle=nonce_oracle)
         o = c.declaration(self.address, self.accounts[0], self.accounts[1], sender_address=self.accounts[0])
         r = self.rpc.do(o)
         proofs = c.parse_declaration(r)

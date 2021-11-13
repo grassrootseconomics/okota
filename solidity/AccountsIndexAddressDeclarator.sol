@@ -2,22 +2,20 @@ pragma solidity >0.6.11;
 
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-
 // TODO: inherit accounts index contract
 contract AccountsIndexAddressDeclarator {
 
 	address public tokenAddress;
-	bytes32 tokenAddressHash;
+	bytes32 public tokenAddressHash;
 	address public addressDeclaratorAddress;
 	mapping(address => uint256) entryIndex;
-	//uint256 count;
 	mapping(address => bool) writers;
 	address[] entries;
 
 	address public owner;
 	address newOwner;
 
-	event AddressAdded(address indexed addedAccount, uint256 indexed accountIndex); // AccountsIndex
+	event AddressAdded(address indexed addedAccount, uint256 indexed accountIndex); // AddressIndex
 	event OwnershipTransferred(address indexed previousOwner, address indexed newOwner); // EIP173
 
 	constructor(address _tokenAddress, address _addressDeclaratorAddress) public {
@@ -42,7 +40,7 @@ contract AccountsIndexAddressDeclarator {
 		require(ok);
 		require(r[31] == 0x01);
 
-		oldEntryIndex = entries.length - 1;
+		oldEntryIndex = entries.length;
 		entryIndex[_account] = oldEntryIndex;
 		entries.push(_account);
 
@@ -65,12 +63,14 @@ contract AccountsIndexAddressDeclarator {
 		return entries.length - 1;
 	}
 
+	// Implements Writer
 	function addWriter(address _writer) public returns (bool) {
 		require(owner == msg.sender);
 		writers[_writer] = true;
 		return true;
 	}
 
+	// Implements Writer
 	function deleteWriter(address _writer) public returns (bool) {
 		require(owner == msg.sender);
 		delete writers[_writer];
@@ -94,5 +94,25 @@ contract AccountsIndexAddressDeclarator {
 		newOwner = address(0);
 		emit OwnershipTransferred(oldOwner, owner);
 		return true;
+	}
+
+	// Implements EIP165
+	function supportsInterface(bytes4 _sum) public pure returns (bool) {
+		if (_sum == 0xcbdb05c7) { // AccountsIndex
+			return true;
+		}
+		if (_sum == 0x01ffc9a7) { // EIP165
+			return true;
+		}
+		if (_sum == 0x9493f8b2) { // EIP173
+			return true;
+		}
+		if (_sum == 0x37a47be4) { // OwnedAccepter
+			return true;
+		}
+		if (_sum == 0x80c84bd6) { // Writer
+			return true;
+		}
+		return false;
 	}
 }

@@ -24,11 +24,12 @@ from chainlib.eth.constant import ZERO_ADDRESS
 from hexathon import (
         add_0x,
         )
+from cic_contracts.registry import to_identifier
 
 # local imports
 from .interface import (
-        TokenUniqueSymbolIndex,
-        to_identifier,
+        #TokenUniqueSymbolIndex,
+        CICTokenIndex,
         )
 
 logg = logging.getLogger(__name__)
@@ -38,7 +39,8 @@ datadir = os.path.join(moddir, '..', 'data')
 
 
 
-class TokenUniqueSymbolIndexAddressDeclarator(TokenUniqueSymbolIndex):
+#class TokenUniqueSymbolIndexAddressDeclarator(TokenUniqueSymbolIndex):
+class TokenUniqueSymbolIndexAddressDeclarator(CICTokenIndex):
 
     __abi = None
     __bytecode = None

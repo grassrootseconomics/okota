@@ -1,7 +1,9 @@
-confini>=0.3.6rc3,<0.5.0
-crypto-dev-signer>=0.4.15rc2,<=0.4.15
-chainlib-eth>=0.0.9a13,<=0.1.0
-eth_erc20>=0.1.2a3,<=0.2.0
-eth-address-index>=0.2.4a1,<=0.3.0
-eth-accounts-index>=0.1.2a3,<=0.2.0
-eth-token-index>=0.2.4a1,<=0.3.0
+confini~=0.5.1
+funga-eth~=0.5.1
+chainlib-eth~=0.0.10
+eth_erc20~=0.1.2
+eth-address-index~=0.2.4
+eth-accounts-index~=0.1.2
+eth-token-index~=0.2.4
+eth-contract-registry~=0.6.3
+cic-contracts~=0.0.5
