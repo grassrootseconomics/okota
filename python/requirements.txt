@@ -1,9 +1,9 @@
-confini~=0.5.1
+confini~=0.5.2
 funga-eth~=0.5.1
-chainlib-eth~=0.0.10
+chainlib-eth~=0.0.12
 eth_erc20~=0.1.2
 eth-address-index~=0.2.4
 eth-accounts-index~=0.1.2
 eth-token-index~=0.2.4
-eth-contract-registry~=0.6.3
+eth-contract-registry~=0.7.1a2
 cic-contracts~=0.0.5

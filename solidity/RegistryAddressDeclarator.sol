@@ -24,7 +24,7 @@ contract ContractRegistryAddressDeclarator {
 		addressDeclarator = _addressDeclarator;
 	}
 
-	function set(bytes32 _identifier, address _address, bytes32 _chainDescriptor, bytes32 _chainConfig) public returns (bool) {
+	function set(bytes32 _identifier, address _address) public returns (bool) { //, bytes32 _chainDescriptor, bytes32 _chainConfig) public returns (bool) {
 		require(msg.sender == owner);
 		require(entries[_identifier] == address(0));
 
@@ -51,38 +51,72 @@ contract ContractRegistryAddressDeclarator {
 		require(ok);
 		require(r[31] == 0x01);
 
-		buf = new bytes(64);
-		for (i = 0; i < 32; i++) {
-			buf[i] = identifierHash[i];
-		}
-		for (i = 0; i < 32; i++) {
-			buf[i+32] = _chainDescriptor[i];
-		}
-
-		identifierHash = sha256(buf);
-		(ok, r) = addressDeclarator.call(abi.encodeWithSignature("addDeclaration(address,bytes32)", _address, identifierHash));
-		require(ok);
-		require(r[31] == 0x01);
-
-
-		for (i = 0; i < 32; i++) {
-			buf[i] = identifierHash[i];
-		}
-		for (i = 0; i < 32; i++) {
-			buf[i+32] = _chainConfig[i];
-		}
-		identifierHash = sha256(buf);
-		(ok, r) = addressDeclarator.call(abi.encodeWithSignature("addDeclaration(address,bytes32)", _address, identifierHash));
-		require(ok);
-		require(r[31] == 0x01);
-
 		entries[_identifier] = _address;
-		chainIdentifiers[_identifier] = _chainDescriptor;
-		chainConfigs[_chainDescriptor] = _chainConfig;
+		///chainIdentifiers[_identifier] = _chainDescriptor;
+		//chainConfigs[_chainDescriptor] = _chainConfig;
 
 		return true;
 	}
 
+//	function set(bytes32 _identifier, address _address, bytes32 _chainDescriptor, bytes32 _chainConfig) public returns (bool) {
+//		require(msg.sender == owner);
+//		require(entries[_identifier] == address(0));
+//
+//		bool ok;
+//		bytes memory r;
+//		bool found = false;
+//		bytes32 identifierHash;
+//		bytes memory buf;
+//		uint8 i;
+//
+//		for (i = 0; i < identifiers.length; i++) {
+//			if (identifiers[i] == _identifier) {
+//				found = true;
+//			}	
+//		}
+//		require(found, 'ERR_IDENTIFIER');
+//
+//		buf = new bytes(32);
+//		for (i = 0; i < 32; i++) {
+//			buf[i] = _identifier[i];
+//		}
+//		identifierHash = sha256(buf);
+//		(ok, r) = addressDeclarator.call(abi.encodeWithSignature("addDeclaration(address,bytes32)", _address, identifierHash));
+//		require(ok);
+//		require(r[31] == 0x01);
+//
+//		buf = new bytes(64);
+//		for (i = 0; i < 32; i++) {
+//			buf[i] = identifierHash[i];
+//		}
+//		for (i = 0; i < 32; i++) {
+//			buf[i+32] = _chainDescriptor[i];
+//		}
+//
+//		identifierHash = sha256(buf);
+//		(ok, r) = addressDeclarator.call(abi.encodeWithSignature("addDeclaration(address,bytes32)", _address, identifierHash));
+//		require(ok);
+//		require(r[31] == 0x01);
+//
+//
+//		for (i = 0; i < 32; i++) {
+//			buf[i] = identifierHash[i];
+//		}
+//		for (i = 0; i < 32; i++) {
+//			buf[i+32] = _chainConfig[i];
+//		}
+//		identifierHash = sha256(buf);
+//		(ok, r) = addressDeclarator.call(abi.encodeWithSignature("addDeclaration(address,bytes32)", _address, identifierHash));
+//		require(ok);
+//		require(r[31] == 0x01);
+//
+//		entries[_identifier] = _address;
+//		chainIdentifiers[_identifier] = _chainDescriptor;
+//		chainConfigs[_chainDescriptor] = _chainConfig;
+//
+//		return true;
+//	}
+//
 	// Implements EIP 173
 	function transferOwnership(address _newOwner) public returns (bool) {
 		require(msg.sender == owner);

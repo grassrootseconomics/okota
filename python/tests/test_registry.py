@@ -49,7 +49,7 @@ class TestContractRegistry(TestAddressDeclaratorBase):
         bogus_hash_two = bytearray(32)
         bogus_hash_two[0] = 0x01
         bogus_hash_two_hex = add_0x(bogus_hash_two.hex())
-        (tx_hash_hex, o) = c.set(self.registry_address, self.accounts[0], 'FOO', self.registry_address, str(self.chain_spec), bogus_hash_two_hex)
+        (tx_hash_hex, o) = c.set(self.registry_address, self.accounts[0], 'FOO', self.registry_address)
         r = self.rpc.do(o)
         o = receipt(r)
         rcpt = self.rpc.do(o)
@@ -75,18 +75,18 @@ class TestContractRegistry(TestAddressDeclaratorBase):
         h = hashlib.sha256()
         h.update(str(self.chain_spec).encode('utf-8'))
         chain_description_hash = h.digest()
-
-        h = hashlib.sha256()
-        h.update(z)
-        h.update(chain_description_hash)
-        z = h.digest() 
-        self.assertEqual(z.hex(), proofs[1])
-
-        h = hashlib.sha256()
-        h.update(z)
-        h.update(bogus_hash_two)
-        z = h.digest() 
-        self.assertEqual(z.hex(), proofs[2])
+#
+#        h = hashlib.sha256()
+#        h.update(z)
+#        h.update(chain_description_hash)
+#        z = h.digest() 
+#        self.assertEqual(z.hex(), proofs[1])
+#
+#        h = hashlib.sha256()
+#        h.update(z)
+#        h.update(bogus_hash_two)
+#        z = h.digest() 
+#        self.assertEqual(z.hex(), proofs[2])
 
 
 
