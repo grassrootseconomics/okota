@@ -23,9 +23,8 @@ from chainlib.jsonrpc import JSONRPCRequest
 from chainlib.eth.constant import ZERO_ADDRESS
 from hexathon import (
         add_0x,
+        strip_0x,
         )
-from cic_contracts.registry import to_identifier
-
 # local imports
 from .interface import (
         #TokenUniqueSymbolIndex,
@@ -37,6 +36,13 @@ logg = logging.getLogger(__name__)
 moddir = os.path.dirname(__file__)
 datadir = os.path.join(moddir, '..', 'data')
 
+
+def to_identifier(txt):
+    identifier_bytes = txt.upper().encode('utf-8')
+    h = hashlib.sha256()
+    identifier_bytes = h.update(identifier_bytes)
+    identifier = h.digest()
+    return identifier.hex()
 
 
 #class TokenUniqueSymbolIndexAddressDeclarator(TokenUniqueSymbolIndex):

@@ -87,12 +87,17 @@ class TestTokenIndex(TestAddressDeclaratorBase):
         o = c.declaration(self.address, self.accounts[0], self.foo_token_address, sender_address=self.accounts[0])
         r = self.rpc.do(o)
         proofs = c.parse_declaration(r)
-    
-        h = hashlib.sha256()
-        h.update('FOO'.encode('utf-8'))
-        z = h.digest()
+   
+        identifier = to_identifier('FOO')
+        #h = hashlib.sha256()
+        #h.update('FOO'.encode('utf-8'))
+        #z = h.digest()
 
-        self.assertEqual(proofs[0], z.hex())
+        #self.assertEqual(proofs[0], z.hex())
+        self.assertEqual(proofs[0], identifier)
+
+        identifier = to_identifier('foo')
+        self.assertEqual(proofs[0], identifier)
 
 
 if __name__ == '__main__':
