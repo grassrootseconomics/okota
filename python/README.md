@@ -1,6 +1,6 @@
 # Okota
 
-Okota implements smart contract registries for the CIC network with the Address Declarator backend.
+Okota implements smart contract registries for the CIC network with the [Address Declarator](https://gitlab.com/cicnet/eth-address-index)  backend.
 
 For every entry added to the registry, a declaration is added aswell.
 
@@ -14,11 +14,20 @@ For every entry added to the registry, a declaration is added aswell.
 | TokenRegistry.registry(token\_address) | sender | token\_address | sha256(token symbol) |
 
 
+## Using the CLI
+
+In the below, all in hex:
+
+* `contract_address` is the address of the deployed Address Declarator contract.
+* `subject_address` is the address a declaration is being made about.
+* `declarer` is the entity making a declaration about the `subject_address`.
+* `proof` a 256-bit proof
+
 ## Query the declarator with CLI
 
-`eth-accounts-index-view -e <declarator_contract> -a <declarator_address> <subject_address>`
+`eth-accounts-index-view -e <contract_address> -a <declarer_address> <subject_address>`
 
 
 ## Add arbitrary other proofs with CLI
 
-`eth-accounts-index-add -e <declarator_contract> -y <keyfile_of_declarator> -a <subject_address> <256 bit proof in hex>`
+`eth-accounts-index-add -e <contract_address> -y <declarer_keyfile> -a <subject_address> <proof>`
