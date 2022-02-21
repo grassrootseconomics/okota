@@ -4,24 +4,22 @@ Okota implements smart contract registries for the CIC network with the [Address
 
 For every entry added to the registry, a declaration is added aswell.
 
-
-## Contract declaration translations
-
-| registry call | declarator | subject | proof |
-|---|---|---|---|
-| ContractRegistry.set(registry\_identifier, contract\_address) | sender | contract\_address | registry\_identifier |
-| AccountsIndex.register(wallet\_address) | sender | wallet\_address | token address of accounts index |
-| TokenRegistry.registry(token\_address) | sender | token\_address | sha256(token symbol) |
-
-
-## Using the CLI
-
-In the below, all in hex:
+In all the below:
 
 * `contract_address` is the address of the deployed Address Declarator contract.
 * `subject_address` is the address a declaration is being made about.
 * `declarer` is the entity making a declaration about the `subject_address`.
 * `proof` a 256-bit proof
+
+
+## Contract declaration translations
+
+| registry call | declarer | subject | proof |
+|---|---|---|---|
+| ContractRegistry.set(registry\_identifier, contract\_address) | sender | contract\_address | registry\_identifier |
+| AccountsIndex.register(wallet\_address) | sender | wallet\_address | token address of accounts index |
+| TokenRegistry.registry(token\_address) | sender | token\_address | sha256(token symbol) |
+
 
 ## Query the declarator with CLI
 
