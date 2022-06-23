@@ -55,9 +55,6 @@ contract TokenUniqueSymbolIndexAddressDeclarator {
 		require(ok);
 		require(r[31] == 0x01);
 
-		idx = registry[token_symbol_key];
-		require(idx == 0);
-
 		registry[token_symbol_key] = tokens.length;
 		tokens.push(_token);
 
