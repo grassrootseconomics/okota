@@ -25,7 +25,7 @@ from okota.token_index.index import (
 # test imports
 from eth_address_declarator.unittest import TestAddressDeclaratorBase
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 logg = logging.getLogger()
 
 testdir = os.path.dirname(__file__)
@@ -54,11 +54,12 @@ class TestTokenIndex(TestAddressDeclaratorBase):
         r = self.rpc.do(o)
         self.assertEqual(r['status'], 1)
 
+
+
     def test_register(self):
         nonce_oracle = RPCNonceOracle(self.accounts[0], self.rpc)
         c = CICTokenIndex(self.chain_spec, signer=self.signer, nonce_oracle=nonce_oracle)
         
-        logg.info('using token index {}'.format(self.token_index_address))
         (tx_hash_hex, o) = c.add(self.token_index_address, self.accounts[0], self.foo_token_address)
         self.rpc.do(o)
         e = unpack(bytes.fromhex(strip_0x(o['params'][0])), self.chain_spec)
@@ -98,34 +99,6 @@ class TestTokenIndex(TestAddressDeclaratorBase):
         identifier = to_identifier('foo')
         self.assertEqual(proofs[0], identifier)
 
-    def test_duplicate_entry(self):
-        nonce_oracle = RPCNonceOracle(self.accounts[0], self.rpc)
-        gft = GiftableToken(self.chain_spec, signer=self.signer, nonce_oracle=nonce_oracle)
-        (tx_hash_hex, o) = gft.constructor(self.accounts[0], 'FooTokenRedeploy', 'FOO', 6)
-        self.rpc.do(o)
-
-        o = receipt(tx_hash_hex)
-        r = self.rpc.do(o)
-        self.assertEqual(r['status'], 1)
-
-        self.foo_token_address_redeploy = r['contract_address']
-        logg.info('second foo token deployed with address {}'.format(self.foo_token_address_redeploy))
-
-        nonce_oracle = RPCNonceOracle(self.accounts[0], self.rpc)
-        c = CICTokenIndex(self.chain_spec, signer=self.signer, nonce_oracle=nonce_oracle)
-        logg.info('using token index {}'.format(self.token_index_address))
-        (tx_hash_hex, o) = c.add(self.token_index_address, self.accounts[0], self.foo_token_address_redeploy)
-        self.rpc.do(o)
-        e = unpack(bytes.fromhex(strip_0x(o['params'][0])), self.chain_spec)
-
-        o = receipt(tx_hash_hex)
-        r = self.rpc.do(o)
-        self.assertEqual(r['status'], 1)
-
-        o = c.address_of(self.token_index_address, 'FOO', sender_address=self.accounts[0])
-        r = self.rpc.do(o)
-        address = c.parse_address_of(r)
-        self.assertEqual(address, strip_0x(self.foo_token_address_redeploy))
 
 if __name__ == '__main__':
     unittest.main()
